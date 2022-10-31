@@ -53,8 +53,8 @@ def imageLoader(img_dir, img_list, mask_dir, mask_list, batch_size):
 from matplotlib import pyplot as plt
 import random
 
-train_img_dir = "BraTS2021_TrainingData/input_data_128/train/images/"
-train_mask_dir = "BraTS2021_TrainingData/input_data_128/train/masks/"
+train_img_dir = "input_data_128/train/images/"
+train_mask_dir = "input_data_128/train/masks/"
 train_img_list=os.listdir(train_img_dir)
 train_mask_list = os.listdir(train_mask_dir)
 

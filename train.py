@@ -22,8 +22,8 @@ import random
 
 
 ####################################################
-train_img_dir = "BraTS2021_TrainingData/input_data_128/train/images/"
-train_mask_dir = "BraTS2021_TrainingData/input_data_128/train/masks/"
+train_img_dir = "input_data_128/train/images/"
+train_mask_dir = "input_data_128/train/masks/"
 
 img_list = os.listdir(train_img_dir)
 msk_list = os.listdir(train_mask_dir)
@@ -59,7 +59,7 @@ plt.show()
 import pandas as pd
 columns = ['0','1', '2', '3']
 df = pd.DataFrame(columns=columns)
-train_mask_list = sorted(glob.glob('BraTS2021_TrainingData/input_data_128/train/masks/*.npy'))
+train_mask_list = sorted(glob.glob('input_data_128/train/masks/*.npy'))
 for img in range(len(train_mask_list)):
     print(img)
     temp_image=np.load(train_mask_list[img])
@@ -89,11 +89,11 @@ wt3 = round((total_labels/(n_classes*label_3)), 2)
 ##############################################################
 #Define the image generators for training and validation
 
-train_img_dir = "BraTS2021_TrainingData/input_data_128/train/images/"
-train_mask_dir = "BraTS2021_TrainingData/input_data_128/train/masks/"
+train_img_dir = "input_data_128/train/images/"
+train_mask_dir = "input_data_128/train/masks/"
 
-val_img_dir = "BraTS2021_TrainingData/input_data_128/val/images/"
-val_mask_dir = "BraTS2021_TrainingData/input_data_128/val/masks/"
+val_img_dir = "input_data_128/val/images/"
+val_mask_dir = "input_data_128/val/masks/"
 
 train_img_list=os.listdir(train_img_dir)
 train_mask_list = os.listdir(train_mask_dir)
@@ -177,8 +177,9 @@ history=model.fit(train_img_datagen,
           validation_data=val_img_datagen,
           validation_steps=val_steps_per_epoch,
           )
-
-model.save('brats_3d.hdf5')
+if(not os.path.exists('saved_models')):
+    os.makedirs('saved_models')
+model.save('saved_models/brats_3d_100epochs_simple_unet_weighted_dice.hdf5')
 ##################################################################
 
 
@@ -266,9 +267,9 @@ print("Mean IoU =", IOU_keras.result().numpy())
 #Try images: 
 img_num = 82
 
-test_img = np.load("BraTS2021_TrainingData/input_data_128/val/images/image_"+str(img_num)+".npy")
+test_img = np.load("input_data_128/val/images/image_"+str(img_num)+".npy")
 
-test_mask = np.load("BraTS2021_TrainingData/input_data_128/val/masks/mask_"+str(img_num)+".npy")
+test_mask = np.load("input_data_128/val/masks/mask_"+str(img_num)+".npy")
 test_mask_argmax=np.argmax(test_mask, axis=3)
 
 test_img_input = np.expand_dims(test_img, axis=0)

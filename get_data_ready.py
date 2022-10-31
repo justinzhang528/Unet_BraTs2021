@@ -37,25 +37,25 @@ scaler = MinMaxScaler()
 
 #Note: Segmented file name in Folder 355 has a weird name. Rename it to match others.
 
-TRAIN_DATASET_PATH = 'BraTS2021_TrainingData/Original_data/'
+TRAIN_DATASET_PATH = 'BraTS2020_TrainingData/'
 #VALIDATION_DATASET_PATH = 'BraTS2020_ValidationData/MICCAI_BraTS2020_ValidationData'
 
-test_image_flair=nib.load(TRAIN_DATASET_PATH + 'BraTS2021_00000/BraTS2021_00000_flair.nii.gz').get_fdata()
+test_image_flair=nib.load(TRAIN_DATASET_PATH + 'BraTS20_Training_001/BraTS20_Training_001_flair.nii').get_fdata()
 print(test_image_flair.max())
 #Scalers are applied to 1D so let us reshape and then reshape back to original shape. 
 test_image_flair=scaler.fit_transform(test_image_flair.reshape(-1, test_image_flair.shape[-1])).reshape(test_image_flair.shape)
 
 
-test_image_t1=nib.load(TRAIN_DATASET_PATH + 'BraTS2021_00000/BraTS2021_00000_t1.nii.gz').get_fdata()
+test_image_t1=nib.load(TRAIN_DATASET_PATH + 'BraTS20_Training_001/BraTS20_Training_001_t1.nii').get_fdata()
 test_image_t1=scaler.fit_transform(test_image_t1.reshape(-1, test_image_t1.shape[-1])).reshape(test_image_t1.shape)
 
-test_image_t1ce=nib.load(TRAIN_DATASET_PATH + 'BraTS2021_00000/BraTS2021_00000_t1ce.nii.gz').get_fdata()
+test_image_t1ce=nib.load(TRAIN_DATASET_PATH + 'BraTS20_Training_001/BraTS20_Training_001_t1ce.nii').get_fdata()
 test_image_t1ce=scaler.fit_transform(test_image_t1ce.reshape(-1, test_image_t1ce.shape[-1])).reshape(test_image_t1ce.shape)
 
-test_image_t2=nib.load(TRAIN_DATASET_PATH + 'BraTS2021_00000/BraTS2021_00000_t2.nii.gz').get_fdata()
+test_image_t2=nib.load(TRAIN_DATASET_PATH + 'BraTS20_Training_001/BraTS20_Training_001_t2.nii').get_fdata()
 test_image_t2=scaler.fit_transform(test_image_t2.reshape(-1, test_image_t2.shape[-1])).reshape(test_image_t2.shape)
 
-test_mask=nib.load(TRAIN_DATASET_PATH + 'BraTS2021_00000/BraTS2021_00000_seg.nii.gz').get_fdata()
+test_mask=nib.load(TRAIN_DATASET_PATH + 'BraTS20_Training_001/BraTS20_Training_001_seg.nii').get_fdata()
 test_mask=test_mask.astype(np.uint8)
 
 print(np.unique(test_mask))  #0, 1, 2, 4 (Need to reencode to 0, 1, 2, 3)
@@ -124,12 +124,12 @@ plt.title('Mask')
 plt.show()
 
 
-imsave('BraTS2021_TrainingData/combined0000.tif', combined_x)
-np.save('BraTS2021_TrainingData/combined0000.npy', combined_x)
+imsave('combined0000.tif', combined_x)
+np.save('combined0000.npy', combined_x)
 #Verify image is being read properly
 #my_img=imread('BraTS2020_TrainingData/combined0000.tif')
 
-my_img=np.load('BraTS2021_TrainingData/combined0000.npy')
+my_img=np.load('combined0000.npy')
 
 test_mask = to_categorical(test_mask, num_classes=4)
 ####################################################################
@@ -145,10 +145,10 @@ test_mask = to_categorical(test_mask, num_classes=4)
 
 # # # images lists harley
 #t1_list = sorted(glob.glob('BraTS2020_TrainingData/MICCAI_BraTS2020_TrainingData/*/*t1.nii'))
-t2_list = sorted(glob.glob('BraTS2021_TrainingData/Original_data/*/*t2.nii.gz'))
-t1ce_list = sorted(glob.glob('BraTS2021_TrainingData/Original_data/*/*t1ce.nii.gz'))
-flair_list = sorted(glob.glob('BraTS2021_TrainingData/Original_data/*/*flair.nii.gz'))
-mask_list = sorted(glob.glob('BraTS2021_TrainingData/Original_data/*/*seg.nii.gz'))
+t2_list = sorted(glob.glob(TRAIN_DATASET_PATH + '*/*t2.nii'))
+t1ce_list = sorted(glob.glob(TRAIN_DATASET_PATH + '*/*t1ce.nii'))
+flair_list = sorted(glob.glob(TRAIN_DATASET_PATH + '*/*flair.nii'))
+mask_list = sorted(glob.glob(TRAIN_DATASET_PATH + '*/*seg.nii'))
 
 #Each volume generates 18 64x64x64x4 sub-volumes. 
 #Total 369 volumes = 6642 sub volumes
@@ -183,12 +183,12 @@ for img in range(len(t2_list)):   #Using t1_list as all lists are of same size
     if (1 - (counts[0]/counts.sum())) > 0.01:  #At least 1% useful volume with labels that are not 0
         print("Save Me")
         temp_mask= to_categorical(temp_mask, num_classes=4)
-        if(not os.path.exists('BraTS2021_TrainingData/input_data_3channels/images')):
-            os.makedirs('BraTS2021_TrainingData/input_data_3channels/images')
-        if(not os.path.exists('BraTS2021_TrainingData/input_data_3channels/masks')):
-            os.makedirs('BraTS2021_TrainingData/input_data_3channels/masks')
-        np.save('BraTS2021_TrainingData/input_data_3channels/images/image_'+str(img)+'.npy', temp_combined_images)
-        np.save('BraTS2021_TrainingData/input_data_3channels/masks/mask_'+str(img)+'.npy', temp_mask)        
+        if(not os.path.exists('input_data_3channels/images')):
+            os.makedirs('input_data_3channels/images')
+        if(not os.path.exists('input_data_3channels/masks')):
+            os.makedirs('input_data_3channels/masks')
+        np.save('input_data_3channels/images/image_'+str(img)+'.npy', temp_combined_images)
+        np.save('input_data_3channels/masks/mask_'+str(img)+'.npy', temp_mask)        
     else:
         print("I am useless")   
    
@@ -205,10 +205,10 @@ pip install split-folders
 """
 import splitfolders  # or import split_folders
 
-input_folder = 'BraTS2021_TrainingData/input_data_3channels/'
-output_folder = 'BraTS2021_TrainingData/input_data_128/'
-if(not os.path.exists('BraTS2021_TrainingData/input_data_128/')):
-    os.makedirs('BraTS2021_TrainingData/input_data_128/')
+input_folder = 'input_data_3channels/'
+output_folder = 'input_data_128/'
+if(not os.path.exists('input_data_128/')):
+    os.makedirs('input_data_128/')
 # Split with a ratio.
 # To only split into training and validation set, set a tuple to `ratio`, i.e, `(.8, .2)`.
 splitfolders.ratio(input_folder, output=output_folder, seed=42, ratio=(.75, .25), group_prefix=None) # default values
